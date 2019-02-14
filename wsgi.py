@@ -4,10 +4,10 @@ from flask import Flask, request, flash, url_for, redirect, \
 from flask_sqlalchemy import SQLAlchemy
 
 
-app = Flask(__name__)
-app.config.from_pyfile('todoapp.cfg')
-app.config['PROPAGATE_EXCEPTIONS'] = True
-db = SQLAlchemy(app)
+application = Flask(__name__)
+application.config.from_pyfile('todoapplication.cfg')
+application.config['PROPAGATE_EXCEPTIONS'] = True
+db = SQLAlchemy(application)
 
 
 class Todo(db.Model):
@@ -25,14 +25,14 @@ class Todo(db.Model):
         self.pub_date = datetime.utcnow()
 
 
-@app.route('/')
+@application.route('/')
 def index():
     return render_template('index.html',
         todos=Todo.query.order_by(Todo.pub_date.desc()).all()
     )
 
 
-@app.route('/new', methods=['GET', 'POST'])
+@application.route('/new', methods=['GET', 'POST'])
 def new():
     if request.method == 'POST':
         if not request.form['title']:
@@ -47,7 +47,7 @@ def new():
             return redirect(url_for('index'))
     return render_template('new.html')
 
-@app.route('/todos/<int:todo_id>', methods = ['GET' , 'POST'])
+@application.route('/todos/<int:todo_id>', methods = ['GET' , 'POST'])
 def show_or_update(todo_id):
     todo_item = Todo.query.get(todo_id)
     if request.method == 'GET':
@@ -60,4 +60,4 @@ def show_or_update(todo_id):
 
 
 if __name__ == '__main__':
-    app.run()
+    application.run()
